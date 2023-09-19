@@ -1,0 +1,10 @@
+[controlnodes]
+debian-hpe ansible_host=debian-hpe.mylab.com
+
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=adam
+ansible_ssh_pass=password123
+
+

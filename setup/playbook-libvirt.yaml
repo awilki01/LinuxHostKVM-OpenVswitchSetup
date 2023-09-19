@@ -1,0 +1,47 @@
+---
+
+- hosts: all
+  become: true
+  vars:
+    var_name: adam
+
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install required system packages for libvirt
+      become: true
+      apt:
+        pkg:
+          - qemu-system
+          - libvirt-daemon-system
+          - virtinst
+          - virt-manager
+
+    - name: Adding user '{{ ansible_user }}' to group libvirt
+      user:
+        name: '{{ ansible_user }}'
+        groups: libvirt
+        append: yes
+
+    - name: Install required system packages for Open vSwitch
+      become: true
+      apt:
+        pkg:
+          - openvswitch-switch
+          - openvswitch-common
+
+    - name: Make default libvirt NAT bridged network start automatically
+      become: true
+      ansible.builtin.shell:
+        cmd: virsh --connect=qemu:///system net-autostart default
+
+# https://wiki.debian.org/KVM
+#   After the default network is setup, you can configure libvirt's DNS server dnsmasq, so that you can access the guests using their host names. This is useful when you have multiple guests and want to access them using simple hostnames, like vm1.libvirt instead of memorizing their IP addresses.
+#   First, configure libvirt's default network. Run virsh --connect=qemu:///system net-edit default and add to the configuration the following line (e.g., after the mac tag):
+#     <domain name='libvirt' localOnly='yes'/>
+#
+#   More info at referenced URL above - if needed

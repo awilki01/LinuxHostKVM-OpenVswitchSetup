@@ -1,0 +1,68 @@
+---
+
+- hosts: all
+  become: true
+  vars:
+    var_name: adam
+    var_intf1: eno1
+    var_intf2: eno2
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install required system packages
+      become: true
+      apt:
+        pkg:
+          - openvswitch-switch
+          - openvswitch-common
+
+    - name: Create OVS bridge OVSbr1
+      openvswitch.openvswitch.openvswitch_bridge:
+        bridge: OVSbr1
+        state: present
+
+    - name: Create OVS bridge OVSbr2
+      openvswitch.openvswitch.openvswitch_bridge:
+        bridge: OVSbr2
+        state: present
+
+# Based on the issues I had trying to get this to work below, at this
+# point, just enter following shell commands:
+#
+# - sudo virsh net-define OVSbr1-network.xml
+# - sudo virsh net-define OVSbr2-network.xml
+# - sudo virsh net-start OVSbr1
+# - sudo virsh net-start OVSbr2
+# - sudo virsh net-autostart OVSbr1
+# - sudo virsh net-autostart OVSbr2
+# 
+# after they are started, you can do "sudo virsh-net list"
+# to view them
+
+# ------------------ TODO ----------------------------------------------
+# This requires the ansible-galaxy collection called community.libvirt
+# install with "ansible-galaxy collection install community.libvirt"
+# from shell
+#    - name: Create libvirt network for OVSbr1
+#      community.libvirt.virt_net:
+#        command: define
+#        name: OVSbr1
+#        xml: '{{ lookup("template", "./OVSbr1-network.xml.j2") }}'
+
+#    - name: Create libvirt network OVSbr2
+#      community.libvirt.virt_net:
+#        command: define
+#        name: OVSbr2
+#        xml: '{{ lookup("template", "./OVSbr2-network.xml.j2") }}'
+#    - name: Create libvirt network for OVSbr1
+#      become: true
+#      ansible.builtin.shell:
+#        cmd: virsh net-define ./ovs-network.xml
+#
+# ---------------------------------------------------------------------
+
+

@@ -1,0 +1,14 @@
+<network>
+  <name>OVSbr2</name>
+  <uuid>750c02ba-5db2-4885-89d7-0f3f30c0380a</uuid>
+  <forward mode='bridge'/>
+  <bridge name='OVSbr2'/>
+  <virtualport type='openvswitch'/>
+  <portgroup name='tagged2' default='yes'>
+  </portgroup>
+  <portgroup name='untagged2-vlan102'>
+    <vlan>
+      <tag id='102'/>
+    </vlan>
+  </portgroup>
+</network>
